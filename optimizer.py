@@ -3,14 +3,19 @@ import nltk
 from nltk.tokenize import sent_tokenize
 import hashlib
 
-# ✅ Punkt downloader with safe check
+# ✅ Download punkt tokenizer safely
 try:
     nltk.data.find("tokenizers/punkt")
 except LookupError:
     nltk.download("punkt")
 
-# ✅ Load spaCy model
-nlp = spacy.load("en_core_web_sm")
+# ✅ Load or download spaCy model
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    from spacy.cli import download
+    download("en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 # ✅ Compress prompt: removes stop words and keeps important tokens
 def compress_prompt(prompt):
@@ -20,7 +25,7 @@ def compress_prompt(prompt):
     keywords = [token.text for token in doc if token.is_alpha and not token.is_stop]
     return " ".join(keywords[:30])
 
-# ✅ Detect intent: simple heuristic-based classification
+# ✅ Detect intent: heuristic-based classification
 def detect_intent(prompt):
     if not prompt:
         return "Unknown"
