@@ -3,9 +3,16 @@ import nltk
 from nltk.tokenize import sent_tokenize
 import hashlib
 
-nltk.download("punkt")
+# ✅ Punkt downloader with safe check
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt")
+
+# ✅ Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
+# ✅ Compress prompt: removes stop words and keeps important tokens
 def compress_prompt(prompt):
     if not prompt:
         return ""
@@ -13,6 +20,7 @@ def compress_prompt(prompt):
     keywords = [token.text for token in doc if token.is_alpha and not token.is_stop]
     return " ".join(keywords[:30])
 
+# ✅ Detect intent: simple heuristic-based classification
 def detect_intent(prompt):
     if not prompt:
         return "Unknown"
@@ -23,6 +31,7 @@ def detect_intent(prompt):
         return "Content Generation"
     return "General"
 
+# ✅ Generate unique fingerprint using SHA-256
 def fingerprint(prompt):
     return hashlib.sha256(prompt.encode()).hexdigest() if prompt else ""
     
