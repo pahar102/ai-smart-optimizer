@@ -3,6 +3,12 @@ from optimizer import compress_prompt, detect_intent, fingerprint
 
 app = FastAPI()
 
+# ✅ Health check route for Render or Postman
+@app.get("/")
+async def root():
+    return {"message": "AI Smart Optimizer is running"}
+
+# ✅ Main optimization endpoint
 @app.post("/optimize")
 async def optimize_prompt(request: Request):
     try:
@@ -24,5 +30,7 @@ async def optimize_prompt(request: Request):
         }
     except Exception as e:
         print("❌ Error occurred:", str(e))
-        return {"error": "Internal Server Error", "detail": str(e)}
-        
+        return {
+            "error": "Internal Server Error",
+            "detail": str(e)
+        }
